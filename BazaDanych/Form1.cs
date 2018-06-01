@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Data.SqlClient;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -15,6 +16,69 @@ namespace BazaDanych
         public Form1()
         {
             InitializeComponent();
+        }
+
+        // dodawanie usera i hasla do bazy
+        private void buttonDopiszDoBazy_Click(object sender, EventArgs e)
+        {
+            User user = new User(textBoxNewUser.Text, inputPassword.Text);
+            user.Add();
+        }
+
+        // usuwanie usera z tabeli
+        private void buttonDeleteUser_Click(object sender, EventArgs e)
+        {
+            User user = new User(textUserToDelete.Text);
+            user.Delete();
+        }
+
+        // aktualizacja usera w bazie
+        private void buttonUpdate_Click(object sender, EventArgs e)
+        {
+            User oldUser = new User(textBoxOldUserName.Text);
+            User newUser = new User(textBoxNewUserName.Text);
+
+            User.Update(oldUser, newUser);
+        }
+
+        // usuwanie wszystkich danych z tabeli
+        private void buttonDeleteTable_Click(object sender, EventArgs e)
+        {
+            Dictionary<string, object> dict = new Dictionary<string, object>();
+
+            string deleteFromDB = "DELETE FROM dbo.Users";
+            User.openCloseDBconnection(deleteFromDB, dict);
+            string setMainKey = "DBCC CHECKIDENT('dbo.Users', RESEED, 0)";
+            User.openCloseDBconnection(setMainKey, dict);
+            MessageBox.Show("Wszystkie dane z tabeli usunięte !");
+        }
+
+        // metoda odpowiadajaca za wyswietlenie userow z tabeli 
+        private void DisplayUsers()
+        {
+            List<String> userList = new List<String>();
+            userList = User.Display();
+
+            for (int i = 0; i < userList.Count; i++)
+            {
+                this.listBox1.Items.Add(userList[i]);
+            }
+
+        }
+
+        // wyswietlenie userow z tabeli po nacisnieciu zakladki Wyświetlanie uzytkowników
+        private void TabControl_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            listBox1.Items.Clear();
+            if (tabControl.SelectedTab.Name == "tabPage5")
+            {
+                DisplayUsers();
+            }
+        }
+
+        private void Form1_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            Application.Exit();
         }
     }
 }
