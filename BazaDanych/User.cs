@@ -7,6 +7,7 @@ using System.Windows.Forms;
 using System.Data.SqlClient;
 using System.Collections;
 
+
 namespace BazaDanych
 {
     public class User
